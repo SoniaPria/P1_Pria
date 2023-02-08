@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using System;
 
-public class QuestionCs : MonoBehaviour
+[Serializable]
+public class QuestionCs
 {
     public string category;
     public string type;
