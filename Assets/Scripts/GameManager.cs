@@ -2,42 +2,57 @@ using System.Collections;
 using UnityEngine.Networking;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class GameManager : MonoBehaviour
 {
-    const string api = "https://opentdb.com/api.php?amount=10&category=11&difficulty=easy&type=boolean";
-    void Start()
+   string api = "https://opentdb.com/api.php?amount=10&category=11&difficulty=easy&type=boolean";
+
+   TrivialCs getResults;
+   public QuestionCs getQuestion;
+
+    void Awake()
     {
         // A correct website page.
         StartCoroutine( GetRequest( api ) );
+    }
 
-        // A non-existing page.
-        // StartCoroutine(GetRequest("https://error.html"));
+    void Start()
+    {
+
     }
 
     IEnumerator GetRequest( string uri )
     {
-        using ( UnityWebRequest webRequest = UnityWebRequest.Get(uri) )
+        using ( UnityWebRequest wr = UnityWebRequest.Get(uri) )
         {
             // Request and wait for the desired page.
-            yield return webRequest.SendWebRequest();
+            yield return wr.SendWebRequest();
 
             string[] pages = uri.Split('/');
             int page = pages.Length - 1;
 
-            switch (webRequest.result)
+            switch (wr.result)
             {
                 case UnityWebRequest.Result.ConnectionError:
                 case UnityWebRequest.Result.DataProcessingError:
-                    Debug.LogError(pages[page] + ": Error: " + webRequest.error);
-                    break;
+                    Debug.LogError(pages[page] + ": Error: " + wr.error);
+                break;
                 case UnityWebRequest.Result.ProtocolError:
-                    Debug.LogError(pages[page] + ": HTTP Error: " + webRequest.error);
-                    break;
+                    Debug.LogError(pages[page] + ": HTTP Error: " + wr.error);
+                break;
                 case UnityWebRequest.Result.Success:
-                    Debug.Log(pages[page] + ":\nReceived: " + webRequest.downloadHandler.text);
-                    break;
+                    Debug.Log(pages[page] + ":\nReceived: " + wr.downloadHandler.text);
+
+                    CreateFromJSON( wr.downloadHandler.text );
+                break;
             }
         }
+    }
+
+    public void CreateFromJSON(string jsonString)
+    {
+        getResults = JsonUtility.FromJson<TrivialCs>(jsonString);
+        getQuestion = getResults.results[0];
     }
 }
