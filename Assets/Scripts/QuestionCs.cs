@@ -1,5 +1,9 @@
 using System;
 
+// JsonUtility .FromJson :
+// Debe ser una clase/estructura simple
+// marcada con el atributo Serializable
+
 [Serializable]
 public class QuestionCs
 {
